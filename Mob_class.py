@@ -1,14 +1,17 @@
 import pygame
 import random
-import os
+# import os
+
 
 class Mob(pygame.sprite.Sprite):
-    def __init__(self, color, width, height):
+    def __init__(self, meteor_img, width, height, colors):
         self.w = width
         self.h = height
+        self.meteor_img = meteor_img
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((30, 40))
-        self.image.fill(color)
+        self.image = meteor_img
+        self.image = pygame.transform.scale(meteor_img, (50, 38))
+        self.image.set_colorkey(colors['BLACK'])
         self.rect = self.image.get_rect()
         self.rect.x = random.randrange(self.w - self.rect.width)
         self.rect.y = random.randrange(-100, -40)
