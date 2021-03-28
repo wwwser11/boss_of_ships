@@ -9,9 +9,9 @@ class Mob(pygame.sprite.Sprite):
     def __init__(self, meteor_img, width, height, colors):
         self.w = width
         self.h = height
-        self.meteor_img = meteor_img
+        # self.meteor_img = meteor_img
         pygame.sprite.Sprite.__init__(self)
-        self.image_orig = meteor_img
+        self.image_orig = random.choice(meteor_img)
         self.image_orig.set_colorkey(colors['BLACK'])
         self.image = self.image_orig.copy()
         self.rect = self.image.get_rect()

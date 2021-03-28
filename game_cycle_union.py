@@ -36,12 +36,21 @@ def game(fps, WIDTH, HEIGHT, colors):
     clock = pygame.time.Clock()
     # give way to pics
     img_dir = path.join(path.dirname(__file__), 'img')
+    meteors_img = path.join(path.dirname(__file__), 'img/meteors')
     # take backpic
     background = pygame.image.load(path.join(img_dir, 'starfield.png')).convert()
     background_rect = background.get_rect()
     player_img = pygame.image.load(path.join(img_dir, "Alien-Frigate.png")).convert()
-    meteor_img = pygame.image.load(path.join(img_dir, "meteorGrey_med1.png")).convert()
+    # meteor_img = pygame.image.load(path.join(img_dir, "meteorGrey_med1.png")).convert()
     bullet_img = pygame.image.load(path.join(img_dir, "laserGreen11.png")).convert()
+    meteor_img = []
+    meteor_list = ['meteorBrown_big1.png', 'meteorBrown_med1.png',
+                   'meteorBrown_med1.png', 'meteorBrown_med3.png',
+                   'meteorBrown_small1.png', 'meteorBrown_small2.png',
+                   'meteorBrown_tiny1.png']
+    for img in meteor_list:
+        meteor_img.append(pygame.image.load(path.join(meteors_img, img)).convert())
+
 
     all_sprites = pygame.sprite.Group()
     mobs = pygame.sprite.Group()
