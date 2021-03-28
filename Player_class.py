@@ -16,9 +16,12 @@ class Player(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         # make img of sprite size 50x40
         self.image = player_img
-        self.image = pygame.transform.scale(player_img, (50, 38))
+        self.image = pygame.transform.scale(player_img, (70, 58))
         self.image.set_colorkey(colors['BLACK'])
         self.rect = self.image.get_rect()
+        self.radius = 25
+        # circle of player body
+        # pygame.draw.circle(self.image, colors['RED'], self.rect.center, self.radius)
         self.rect.centerx = w / 2
         self.rect.bottom = h - 10
         self.speedx = 0

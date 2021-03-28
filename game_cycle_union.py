@@ -39,9 +39,9 @@ def game(fps, WIDTH, HEIGHT, colors):
     # take backpic
     background = pygame.image.load(path.join(img_dir, 'starfield.png')).convert()
     background_rect = background.get_rect()
-    player_img = pygame.image.load(path.join(img_dir, "playerShip1_orange.png")).convert()
-    meteor_img = pygame.image.load(path.join(img_dir, "p1_jump.png")).convert()
-    bullet_img = pygame.image.load(path.join(img_dir, "laserRed16.png")).convert()
+    player_img = pygame.image.load(path.join(img_dir, "Alien-Frigate.png")).convert()
+    meteor_img = pygame.image.load(path.join(img_dir, "meteorGrey_med1.png")).convert()
+    bullet_img = pygame.image.load(path.join(img_dir, "laserGreen11.png")).convert()
 
     all_sprites = pygame.sprite.Group()
     mobs = pygame.sprite.Group()
@@ -70,7 +70,7 @@ def game(fps, WIDTH, HEIGHT, colors):
         # update
         all_sprites.update()
         # check collide of player and mob, dokill = False
-        hits = pygame.sprite.spritecollide(player, mobs, False)
+        hits = pygame.sprite.spritecollide(player, mobs, False, pygame.sprite.collide_circle)
         if hits:
             # if hits not empty(collide done) game will stop
             running = False
