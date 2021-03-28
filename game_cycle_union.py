@@ -2,6 +2,7 @@ from Player_class import *
 from Mob_class import *
 from Laser_class import *
 from os import path
+from score_writer import draw_text
 
 # size
 WIDTH = 480
@@ -20,12 +21,6 @@ colors = dict(
 
 def game(fps, WIDTH, HEIGHT, colors):
 
-    # add color of temporary player img rectangle and back
-    back_color = colors['BLACK']
-    pcolor = colors['GREEN']
-    mcolor = colors['BLUE']
-    lcolor = colors['RED']
-
     # turn on pygame
     pygame.init()
     # music
@@ -41,7 +36,6 @@ def game(fps, WIDTH, HEIGHT, colors):
     background = pygame.image.load(path.join(img_dir, 'starfield.png')).convert()
     background_rect = background.get_rect()
     player_img = pygame.image.load(path.join(img_dir, "Alien-Frigate.png")).convert()
-    # meteor_img = pygame.image.load(path.join(img_dir, "meteorGrey_med1.png")).convert()
     bullet_img = pygame.image.load(path.join(img_dir, "laserGreen11.png")).convert()
     meteor_img = []
     meteor_list = ['meteorBrown_big1.png', 'meteorBrown_med1.png',
@@ -50,7 +44,6 @@ def game(fps, WIDTH, HEIGHT, colors):
                    'meteorBrown_tiny1.png']
     for img in meteor_list:
         meteor_img.append(pygame.image.load(path.join(meteors_img, img)).convert())
-
 
     all_sprites = pygame.sprite.Group()
     mobs = pygame.sprite.Group()
@@ -62,6 +55,7 @@ def game(fps, WIDTH, HEIGHT, colors):
         m = Mob(meteor_img, WIDTH, HEIGHT, colors)
         all_sprites.add(m)
         mobs.add(m)
+    score = 0
 
     running = True
     while running:  # game cycle
@@ -86,14 +80,17 @@ def game(fps, WIDTH, HEIGHT, colors):
 
         hits2 = pygame.sprite.groupcollide(mobs, bullets, True, True)
         for hit in hits2:
+            score += 45 - hit.radius
             m = Mob(meteor_img, WIDTH, HEIGHT, colors)
             all_sprites.add(m)
             mobs.add(m)
 
-        screen.fill(back_color)  # rendering
+        screen.fill(colors['BLACK'])  # rendering
         screen.blit(background, background_rect)
         all_sprites.draw(screen)
+        draw_text(screen, str(score), 18, WIDTH / 2, 10, colors)
         pygame.display.flip()  # flip screen
+
     # close screen
     pygame.quit()
 
