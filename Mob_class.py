@@ -17,7 +17,7 @@ class Mob(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.radius = int(self.rect.width * .85 / 2)
         # circule of mobs body
-        # pygame.draw.circle(self.image, colors['RED'], self.rect.center, self.radius)
+        # pygame.draw.circle(self.image_orig, colors['RED'], self.rect.center, self.radius)
         self.rect.x = random.randrange(self.w - self.rect.width)
         self.rect.y = random.randrange(-100, -40)
         self.speedy = random.randrange(1, 5)
@@ -43,7 +43,7 @@ class Mob(pygame.sprite.Sprite):
     def update(self):
         self.rect.y += self.speedy
         self.rect.x += self.speedx
-        if self.rect.top > self.h + 10 or self.rect.left < -25 or self.rect.right > self.w + 20:
+        if self.rect.top > self.h + 10 or self.rect.left > self.w or self.rect.right < 0:
             self.rect.x = random.randrange(self.w - self.rect.width)
             self.rect.y = random.randrange(-100, -40)
             self.speedy = random.randrange(1, 5)
