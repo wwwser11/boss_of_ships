@@ -45,7 +45,8 @@ class Mob(pygame.sprite.Sprite):
         self.rect.x += self.speedx
         if self.rect.top > self.h + 10 or self.rect.left > self.w or self.rect.right < 0:
             self.rect.x = random.randrange(self.w - self.rect.width)
-            self.rect.y = random.randrange(-100, -40)
+            # self.rect.y = random.randrange(-100, -40)
+            self.rect.y = -100
             self.speedy = random.randrange(1, 5)
 
         self.rotate()
