@@ -6,9 +6,10 @@ from Laser_class import Laser
 
 # make player sprite
 class Player(pygame.sprite.Sprite):
-    def __init__(self, w, h, player_img, all_sprites, bullets, bullet_img, colors):
+    def __init__(self, w, h, player_img, all_sprites, bullets, bullet_img, colors, shoot_sound):
         self.w = w
         self.h = h
+        self.shoot_sound = shoot_sound
         self.all_sprites = all_sprites
         self.bullets = bullets
         self.bullet_img = bullet_img
@@ -43,4 +44,5 @@ class Player(pygame.sprite.Sprite):
         laser_bullet = Laser(self.rect.centerx, self.rect.top, self.bullet_img, self.colors)
         self.all_sprites.add(laser_bullet)
         self.bullets.add(laser_bullet)
+        self.shoot_sound.play()
 

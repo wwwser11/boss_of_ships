@@ -1,3 +1,6 @@
+# MUSIC Give credits to - Fato Shadow
+# Art from Kenney.nl
+
 from Player_class import *
 from Mob_class import *
 from Laser_class import *
@@ -31,7 +34,15 @@ def game(fps, WIDTH, HEIGHT, colors):
     clock = pygame.time.Clock()
     # give way to pics
     img_dir = path.join(path.dirname(__file__), 'img')
+    # give way to music
+    snd_dir = path.join(path.dirname(__file__), 'snd')
     meteors_img = path.join(path.dirname(__file__), 'img/meteors')
+    shoot_sound = pygame.mixer.Sound(path.join(snd_dir, 'Laser_Shoot1_best.wav'))
+    explosion_sound = []
+    for snd in ['Explosion_met.wav', 'Explosion4_ship.wav', 'Explosion7.wav']:
+        explosion_sound.append(pygame.mixer.Sound(path.join(snd_dir, snd)))
+    pygame.mixer.music.load(path.join(snd_dir, 'MUSIC1.mp3'))
+    pygame.mixer.music.set_volume(0.7)
     # take backpic
     background = pygame.image.load(path.join(img_dir, 'starfield.png')).convert()
     background_rect = background.get_rect()
@@ -48,7 +59,7 @@ def game(fps, WIDTH, HEIGHT, colors):
     all_sprites = pygame.sprite.Group()
     mobs = pygame.sprite.Group()
     bullets = pygame.sprite.Group()
-    player = Player(WIDTH, HEIGHT, player_img, all_sprites, bullets, bullet_img, colors)
+    player = Player(WIDTH, HEIGHT, player_img, all_sprites, bullets, bullet_img, colors, shoot_sound)
     all_sprites.add(player)
 
     for i in range(8):
@@ -56,7 +67,7 @@ def game(fps, WIDTH, HEIGHT, colors):
         all_sprites.add(m)
         mobs.add(m)
     score = 0
-
+    pygame.mixer.music.play(loops=-1)
     running = True
     while running:  # game cycle
 
@@ -79,8 +90,10 @@ def game(fps, WIDTH, HEIGHT, colors):
             running = False
 
         hits2 = pygame.sprite.groupcollide(mobs, bullets, True, True)
+        # hit to mob
         for hit in hits2:
             score += 45 - hit.radius
+            random.choice(explosion_sound).play()
             m = Mob(meteor_img, WIDTH, HEIGHT, colors)
             all_sprites.add(m)
             mobs.add(m)
