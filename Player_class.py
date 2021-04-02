@@ -9,7 +9,13 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, w, h, player_img, all_sprites, bullets, bullet_img, colors, shoot_sound):
         self.w = w
         self.h = h
+        self.speedx = 0
+        self.shield = 100
         self.shoot_sound = shoot_sound
+        # set time between shoots 250ms
+        self.shoot_delay = 250
+        # save time after last shoot
+        self.last_shot = pygame.time.get_ticks()
         self.all_sprites = all_sprites
         self.bullets = bullets
         self.bullet_img = bullet_img
@@ -39,10 +45,15 @@ class Player(pygame.sprite.Sprite):
             self.rect.right = self.w
         if self.rect.left < 0:
             self.rect.left = 0
+        if keystate[pygame.K_SPACE]:
+            self.shoot()
 
     def shoot(self):
-        laser_bullet = Laser(self.rect.centerx, self.rect.top, self.bullet_img, self.colors)
-        self.all_sprites.add(laser_bullet)
-        self.bullets.add(laser_bullet)
-        self.shoot_sound.play()
+        now = pygame.time.get_ticks()
+        if now - self.last_shot > self.shoot_delay:
+            self.last_shot = now
+            laser_bullet = Laser(self.rect.centerx, self.rect.top, self.bullet_img, self.colors)
+            self.all_sprites.add(laser_bullet)
+            self.bullets.add(laser_bullet)
+            self.shoot_sound.play()
 

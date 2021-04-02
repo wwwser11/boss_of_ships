@@ -5,7 +5,7 @@ from Player_class import *
 from Mob_class import *
 from Laser_class import *
 from os import path
-from score_writer import draw_text
+from score_writer import *
 
 # size
 WIDTH = 480
@@ -23,7 +23,10 @@ colors = dict(
 
 
 def game(fps, WIDTH, HEIGHT, colors):
-
+    def newmob():
+        m = Mob(meteor_img, WIDTH, HEIGHT, colors)
+        all_sprites.add(m)
+        mobs.add(m)
     # turn on pygame
     pygame.init()
     # music
@@ -63,9 +66,8 @@ def game(fps, WIDTH, HEIGHT, colors):
     all_sprites.add(player)
 
     for i in range(8):
-        m = Mob(meteor_img, WIDTH, HEIGHT, colors)
-        all_sprites.add(m)
-        mobs.add(m)
+        newmob()
+
     score = 0
     pygame.mixer.music.play(loops=-1)
     running = True
@@ -76,32 +78,35 @@ def game(fps, WIDTH, HEIGHT, colors):
         for event in pygame.event.get():  # now we can close screen
             if event.type == pygame.QUIT:
                 running = False
-            # if tap space shoot happen
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    player.shoot()
 
         # update
         all_sprites.update()
-        # check collide of player and mob, dokill = False
-        hits = pygame.sprite.spritecollide(player, mobs, False, pygame.sprite.collide_circle)
-        if hits:
-            # if hits not empty(collide done) game will stop
-            running = False
+        # check collide of player and mob, dokill = False(dont delete mob)
+        # when dokill True collide of player and mob delete mob
+        hits = pygame.sprite.spritecollide(player, mobs, True, pygame.sprite.collide_circle)
+        # if hits:
+        #     # if hits not empty(collide done) game will stop
+        #     running = False
+        for hit in hits:
+            player.shield -= hit.radius * 2
+            random.choice(explosion_sound).play()
+            newmob()
+            if player.shield <= 0:
+                running = False
+
 
         hits2 = pygame.sprite.groupcollide(mobs, bullets, True, True)
         # hit to mob
         for hit in hits2:
             score += 45 - hit.radius
             random.choice(explosion_sound).play()
-            m = Mob(meteor_img, WIDTH, HEIGHT, colors)
-            all_sprites.add(m)
-            mobs.add(m)
+            newmob()
 
         screen.fill(colors['BLACK'])  # rendering
         screen.blit(background, background_rect)
         all_sprites.draw(screen)
         draw_text(screen, str(score), 18, WIDTH / 2, 10, colors)
+        draw_health(screen, 5, 5, player.shield, colors)
         pygame.display.flip()  # flip screen
 
     # close screen
