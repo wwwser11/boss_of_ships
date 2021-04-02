@@ -1,11 +1,13 @@
 # MUSIC Give credits to - Fato Shadow
 # Art from Kenney.nl
+# FuturaRound *Arsenal Company © 1997* FAX: (095)924-3775; e-Mail: arsenal@itco.msk.su;
 
 from Player_class import *
 from Mob_class import *
 from Laser_class import *
 from os import path
 from score_writer import *
+from Explosion_class import *
 
 # size
 WIDTH = 480
@@ -40,6 +42,7 @@ def game(fps, WIDTH, HEIGHT, colors):
     # give way to music
     snd_dir = path.join(path.dirname(__file__), 'snd')
     meteors_img = path.join(path.dirname(__file__), 'img/meteors')
+    explosion_img = path.join(path.dirname(__file__), 'img/explosion')
     shoot_sound = pygame.mixer.Sound(path.join(snd_dir, 'Laser_Shoot1_best.wav'))
     explosion_sound = []
     for snd in ['Explosion_met.wav', 'Explosion4_ship.wav', 'Explosion7.wav']:
@@ -58,6 +61,16 @@ def game(fps, WIDTH, HEIGHT, colors):
                    'meteorBrown_tiny1.png']
     for img in meteor_list:
         meteor_img.append(pygame.image.load(path.join(meteors_img, img)).convert())
+    explosion_anim = {'large': [], 'small': []}
+    for i in range(9):
+        filename = 'regularExplosion0{}.png'.format(i)
+        print(filename)
+        img = pygame.image.load(path.join(explosion_img, filename)).convert()
+        img.set_colorkey(colors['BLACK'])
+        img_lg = pygame.transform.scale(img, (75, 75))
+        explosion_anim['large'].append(img_lg)
+        img_sm = pygame.transform.scale(img, (32, 32))
+        explosion_anim['small'].append(img_sm)
 
     all_sprites = pygame.sprite.Group()
     mobs = pygame.sprite.Group()
@@ -84,12 +97,11 @@ def game(fps, WIDTH, HEIGHT, colors):
         # check collide of player and mob, dokill = False(dont delete mob)
         # when dokill True collide of player and mob delete mob
         hits = pygame.sprite.spritecollide(player, mobs, True, pygame.sprite.collide_circle)
-        # if hits:
-        #     # if hits not empty(collide done) game will stop
-        #     running = False
         for hit in hits:
             player.shield -= hit.radius * 2
             random.choice(explosion_sound).play()
+            explosion = Explosion(hit.rect.center, 'small', explosion_anim)
+            all_sprites.add(explosion)
             newmob()
             if player.shield <= 0:
                 running = False
@@ -100,6 +112,8 @@ def game(fps, WIDTH, HEIGHT, colors):
         for hit in hits2:
             score += 45 - hit.radius
             random.choice(explosion_sound).play()
+            explosion = Explosion(hit.rect.center, 'large', explosion_anim)
+            all_sprites.add(explosion)
             newmob()
 
         screen.fill(colors['BLACK'])  # rendering
