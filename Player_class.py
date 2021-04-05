@@ -6,7 +6,7 @@ from Laser_class import Laser
 
 # make player sprite
 class Player(pygame.sprite.Sprite):
-    def __init__(self, w, h, player_img, all_sprites, bullets, bullet_img, colors, shoot_sound):
+    def __init__(self, w, h, player_img, all_sprites, bullets, bullet_img, colors, shoot_sound, power_up_time):
         self.w = w
         self.h = h
         self.speedx = 0
@@ -35,9 +35,15 @@ class Player(pygame.sprite.Sprite):
         self.lives = 3
         self.hidden = False
         self.hide_timer = pygame.time.get_ticks()
+        self.power = 1
+        self.power_up_time = power_up_time
+        self.power_time = pygame.time.get_ticks()
 
 
     def update(self):
+        if self.power >= 2 and pygame.time.get_ticks() - self.power_time > self.power_up_time:
+            self.power -= 1
+            self.power_time = pygame.time.get_ticks()
         self.speedx = 0
         keystate = pygame.key.get_pressed()
         if keystate[pygame.K_LEFT]:
@@ -56,15 +62,28 @@ class Player(pygame.sprite.Sprite):
             self.rect.centerx = self.w / 2
             self.rect.bottom = self.h - 10
 
+    def powerup(self):
+        self.power += 1
+        self.power_time = pygame.time.get_ticks()
+
+
     def shoot(self):
         now = pygame.time.get_ticks()
         if now - self.last_shot > self.shoot_delay:
             self.last_shot = now
-            laser_bullet = Laser(self.rect.centerx, self.rect.top, self.bullet_img, self.colors)
-            self.all_sprites.add(laser_bullet)
-            self.bullets.add(laser_bullet)
-            self.shoot_sound.play()
-
+            if self.power == 1:
+                laser_bullet = Laser(self.rect.centerx, self.rect.top, self.bullet_img, self.colors)
+                self.all_sprites.add(laser_bullet)
+                self.bullets.add(laser_bullet)
+                self.shoot_sound.play()
+            if self.power >= 2:
+                laser_bullet1 = Laser(self.rect.right - 23, self.rect.top, self.bullet_img, self.colors)
+                laser_bullet2 = Laser(self.rect.left + 24, self.rect.top, self.bullet_img, self.colors)
+                self.all_sprites.add(laser_bullet1)
+                self.all_sprites.add(laser_bullet2)
+                self.bullets.add(laser_bullet1)
+                self.bullets.add(laser_bullet2)
+                self.shoot_sound.play()
 
     # just hide ship from screen
     def hide(self):

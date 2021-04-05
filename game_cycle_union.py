@@ -16,6 +16,7 @@ import time
 WIDTH = 480
 HEIGHT = 600
 FPS = 60
+POWER_UP_TIME = 5000
 
 # colors (R, G, B)
 colors = dict(
@@ -88,7 +89,7 @@ def game(fps, WIDTH, HEIGHT, colors):
     mobs = pygame.sprite.Group()
     bullets = pygame.sprite.Group()
     powerups = pygame.sprite.Group()
-    player = Player(WIDTH, HEIGHT, player_img, all_sprites, bullets, bullet_img, colors, shoot_sound)
+    player = Player(WIDTH, HEIGHT, player_img, all_sprites, bullets, bullet_img, colors, shoot_sound, POWER_UP_TIME)
     all_sprites.add(player)
 
     for i in range(8):
@@ -145,8 +146,8 @@ def game(fps, WIDTH, HEIGHT, colors):
                 player.shield += random.randrange(10, 30)
                 if player.shield >= 100:
                     player.shield = 100
-                if hit.type == 'gun':
-                    pass
+            if hit.type == 'gun':
+                player.powerup()
 
         screen.fill(colors['BLACK'])  # rendering
         screen.blit(background, background_rect)
