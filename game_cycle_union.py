@@ -8,7 +8,9 @@ from Laser_class import *
 from os import path
 from score_writer import *
 from Explosion_class import *
+from player_improve import *
 import time
+
 
 # size
 WIDTH = 480
@@ -79,10 +81,13 @@ def game(fps, WIDTH, HEIGHT, colors):
         img2 = pygame.image.load(path.join(explosion_img, filename2)).convert()
         img.set_colorkey(colors['BLACK'])
         explosion_anim['player'].append(img2)
-
+    powerup_images = {}
+    powerup_images['shield'] = pygame.image.load(path.join(img_dir, 'shield_gold.png')).convert()
+    powerup_images['gun'] = pygame.image.load(path.join(img_dir, 'bolt_gold.png'))
     all_sprites = pygame.sprite.Group()
     mobs = pygame.sprite.Group()
     bullets = pygame.sprite.Group()
+    powerups = pygame.sprite.Group()
     player = Player(WIDTH, HEIGHT, player_img, all_sprites, bullets, bullet_img, colors, shoot_sound)
     all_sprites.add(player)
 
@@ -93,7 +98,6 @@ def game(fps, WIDTH, HEIGHT, colors):
     pygame.mixer.music.play(loops=-1)
     running = True
     while running:  # game cycle
-
         clock.tick(fps)  # set cycle speed
 
         for event in pygame.event.get():  # now we can close screen
@@ -117,7 +121,6 @@ def game(fps, WIDTH, HEIGHT, colors):
                 player.hide()
                 player.lives -= 1
                 player.shield = 100
-
         if player.lives == 0 and not death_explosion.alive():
             running = False
 
@@ -129,7 +132,21 @@ def game(fps, WIDTH, HEIGHT, colors):
             random.choice(explosion_sound).play()
             explosion = Explosion(hit.rect.center, 'large', explosion_anim)
             all_sprites.add(explosion)
+            # add chance to get power up(gun or more health)
+            if random.random() > 0.9:
+                pow = improve(hit.rect.center, HEIGHT, powerup_images,colors)
+                all_sprites.add(pow)
+                powerups.add(pow)
             newmob()
+        # hit powerup icon
+        hits3 = pygame.sprite.spritecollide(player, powerups, True)
+        for hit in hits3:
+            if hit.type == 'shield':
+                player.shield += random.randrange(10, 30)
+                if player.shield >= 100:
+                    player.shield = 100
+                if hit.type == 'gun':
+                    pass
 
         screen.fill(colors['BLACK'])  # rendering
         screen.blit(background, background_rect)
