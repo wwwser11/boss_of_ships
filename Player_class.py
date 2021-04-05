@@ -32,6 +32,10 @@ class Player(pygame.sprite.Sprite):
         self.rect.centerx = w / 2
         self.rect.bottom = h - 10
         self.speedx = 0
+        self.lives = 3
+        self.hidden = False
+        self.hide_timer = pygame.time.get_ticks()
+
 
     def update(self):
         self.speedx = 0
@@ -47,6 +51,10 @@ class Player(pygame.sprite.Sprite):
             self.rect.left = 0
         if keystate[pygame.K_SPACE]:
             self.shoot()
+        if self.hidden and pygame.time.get_ticks() - self.hide_timer > 1000:
+            self.hidden = False
+            self.rect.centerx = self.w / 2
+            self.rect.bottom = self.h - 10
 
     def shoot(self):
         now = pygame.time.get_ticks()
@@ -56,4 +64,11 @@ class Player(pygame.sprite.Sprite):
             self.all_sprites.add(laser_bullet)
             self.bullets.add(laser_bullet)
             self.shoot_sound.play()
+
+
+    # just hide ship from screen
+    def hide(self):
+        self.hidden = True
+        self.hide_timer = pygame.time.get_ticks()
+        self.rect.center = (self.w / 2, self.h + 200)
 

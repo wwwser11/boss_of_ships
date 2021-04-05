@@ -21,3 +21,10 @@ def draw_health(surf, x, y, player_shiald, colors):
     fill_rect = pygame.Rect(x, y, fill, bar_height)
     pygame.draw.rect(surf, colors['GREEN'], fill_rect)
     pygame.draw.rect(surf, colors['WHITE'], outline_rect, 2)
+
+def draw_lives(surf, x, y, lives, img):
+    for i in range(lives):
+        img_rect = img.get_rect()
+        img_rect.x = x +30 * i
+        img_rect.y = y
+        surf.blit(img, img_rect)

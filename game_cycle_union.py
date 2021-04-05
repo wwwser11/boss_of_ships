@@ -8,6 +8,7 @@ from Laser_class import *
 from os import path
 from score_writer import *
 from Explosion_class import *
+import time
 
 # size
 WIDTH = 480
@@ -37,9 +38,8 @@ def game(fps, WIDTH, HEIGHT, colors):
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption('BOSS_of_SHIPS')
     clock = pygame.time.Clock()
-    # give way to pics
+    # give ways to pics, music
     img_dir = path.join(path.dirname(__file__), 'img')
-    # give way to music
     snd_dir = path.join(path.dirname(__file__), 'snd')
     meteors_img = path.join(path.dirname(__file__), 'img/meteors')
     explosion_img = path.join(path.dirname(__file__), 'img/explosion')
@@ -53,24 +53,32 @@ def game(fps, WIDTH, HEIGHT, colors):
     background = pygame.image.load(path.join(img_dir, 'starfield.png')).convert()
     background_rect = background.get_rect()
     player_img = pygame.image.load(path.join(img_dir, "Alien-Frigate.png")).convert()
+    player_img_mini = pygame.transform.scale(player_img, (25, 19))
+    player_img_mini.set_colorkey(colors['BLACK'])
     bullet_img = pygame.image.load(path.join(img_dir, "laserGreen11.png")).convert()
     meteor_img = []
     meteor_list = ['meteorBrown_big1.png', 'meteorBrown_med1.png',
                    'meteorBrown_med1.png', 'meteorBrown_med3.png',
                    'meteorBrown_small1.png', 'meteorBrown_small2.png',
-                   'meteorBrown_tiny1.png']
+                   'meteorBrown_tiny1.png', 'meteorGrey_big1.png', 'meteorGrey_med1.png',
+                   'meteorGrey_med1.png', 'meteorGrey_med2.png',
+                   'meteorGrey_small1.png', 'meteorGrey_small2.png',
+                   'meteorGrey_tiny1.png']
     for img in meteor_list:
         meteor_img.append(pygame.image.load(path.join(meteors_img, img)).convert())
-    explosion_anim = {'large': [], 'small': []}
+    explosion_anim = {'large': [], 'small': [], 'player' : []}
     for i in range(9):
         filename = 'regularExplosion0{}.png'.format(i)
-        print(filename)
         img = pygame.image.load(path.join(explosion_img, filename)).convert()
         img.set_colorkey(colors['BLACK'])
         img_lg = pygame.transform.scale(img, (75, 75))
         explosion_anim['large'].append(img_lg)
         img_sm = pygame.transform.scale(img, (32, 32))
         explosion_anim['small'].append(img_sm)
+        filename2 = 'sonicExplosion0{}.png'.format(i)
+        img2 = pygame.image.load(path.join(explosion_img, filename2)).convert()
+        img.set_colorkey(colors['BLACK'])
+        explosion_anim['player'].append(img2)
 
     all_sprites = pygame.sprite.Group()
     mobs = pygame.sprite.Group()
@@ -104,6 +112,13 @@ def game(fps, WIDTH, HEIGHT, colors):
             all_sprites.add(explosion)
             newmob()
             if player.shield <= 0:
+                death_explosion = Explosion(player.rect.center, 'player', explosion_anim)
+                all_sprites.add(death_explosion)
+                player.hide()
+                player.lives -= 1
+                player.shield = 100
+
+            if player.lives == 0 and not death_explosion.alive():
                 running = False
 
 
@@ -120,8 +135,11 @@ def game(fps, WIDTH, HEIGHT, colors):
         screen.blit(background, background_rect)
         all_sprites.draw(screen)
         draw_text(screen, str(score), 18, WIDTH / 2, 10, colors)
+        draw_lives(screen, WIDTH - 100, 5, player.lives,
+                   player_img_mini)
         draw_health(screen, 5, 5, player.shield, colors)
         pygame.display.flip()  # flip screen
+
 
     # close screen
     pygame.quit()
