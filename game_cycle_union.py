@@ -118,8 +118,8 @@ def game(fps, WIDTH, HEIGHT, colors):
                 player.lives -= 1
                 player.shield = 100
 
-            if player.lives == 0 and not death_explosion.alive():
-                running = False
+        if player.lives == 0 and not death_explosion.alive():
+            running = False
 
 
         hits2 = pygame.sprite.groupcollide(mobs, bullets, True, True)
