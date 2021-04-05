@@ -52,6 +52,7 @@ def game(fps, WIDTH, HEIGHT, colors):
         explosion_sound.append(pygame.mixer.Sound(path.join(snd_dir, snd)))
     pygame.mixer.music.load(path.join(snd_dir, 'MUSIC1.mp3'))
     pygame.mixer.music.set_volume(0.7)
+    pickup_sound = pygame.mixer.Sound(path.join(snd_dir, 'Pickup.wav'))
     # take backpic
     background = pygame.image.load(path.join(img_dir, 'starfield.png')).convert()
     background_rect = background.get_rect()
@@ -143,10 +144,12 @@ def game(fps, WIDTH, HEIGHT, colors):
         hits3 = pygame.sprite.spritecollide(player, powerups, True)
         for hit in hits3:
             if hit.type == 'shield':
+                pickup_sound.play()
                 player.shield += random.randrange(10, 30)
                 if player.shield >= 100:
                     player.shield = 100
             if hit.type == 'gun':
+                pickup_sound.play()
                 player.powerup()
 
         screen.fill(colors['BLACK'])  # rendering
