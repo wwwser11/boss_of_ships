@@ -28,3 +28,19 @@ def draw_lives(surf, x, y, lives, img):
         img_rect.x = x +30 * i
         img_rect.y = y
         surf.blit(img, img_rect)
+
+def show_gо_screen(screen,background, background_rect, width, height, fps, clock, colors ):
+    screen.blit(background, background_rect)
+    draw_text(screen, 'boss_of_ships', 64, width / 2, height / 4, colors)
+    draw_text(screen, "Arrow keys move, Space to fire", 22,
+              width / 2, height / 2, colors)
+    draw_text(screen, "Press a key to begin", 18, width / 2, height * 3 / 4, colors)
+    pygame.display.flip()
+    waiting = True
+    while waiting:
+        clock.tick(fps)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+            if event.type == pygame.KEYUP:
+                waiting = False

@@ -86,22 +86,34 @@ def game(fps, WIDTH, HEIGHT, colors):
     powerup_images = {}
     powerup_images['shield'] = pygame.image.load(path.join(img_dir, 'shield_gold.png')).convert()
     powerup_images['gun'] = pygame.image.load(path.join(img_dir, 'bolt_gold.png'))
-    all_sprites = pygame.sprite.Group()
-    mobs = pygame.sprite.Group()
-    bullets = pygame.sprite.Group()
-    powerups = pygame.sprite.Group()
-    player = Player(WIDTH, HEIGHT, player_img, all_sprites, bullets, bullet_img, colors, shoot_sound, POWER_UP_TIME)
-    all_sprites.add(player)
+    # all_sprites = pygame.sprite.Group()
+    # mobs = pygame.sprite.Group()
+    # bullets = pygame.sprite.Group()
+    # powerups = pygame.sprite.Group()
+    # player = Player(WIDTH, HEIGHT, player_img, all_sprites, bullets, bullet_img, colors, shoot_sound, POWER_UP_TIME)
+    # all_sprites.add(player)
 
-    for i in range(8):
-        newmob()
+    # for i in range(8):
+    #     newmob()
 
     score = 0
     pygame.mixer.music.play(loops=-1)
     running = True
+    game_over = True
     while running:  # game cycle
         clock.tick(fps)  # set cycle speed
-
+        if game_over:
+            show_gо_screen(screen,background, background_rect, WIDTH, HEIGHT, FPS, clock, colors)
+            game_over = False
+            all_sprites = pygame.sprite.Group()
+            mobs = pygame.sprite.Group()
+            bullets = pygame.sprite.Group()
+            powerups = pygame.sprite.Group()
+            player = Player(WIDTH, HEIGHT, player_img, all_sprites, bullets, bullet_img, colors, shoot_sound, POWER_UP_TIME)
+            all_sprites.add(player)
+            for i in range(8):
+                newmob()
+            score = 0
         for event in pygame.event.get():  # now we can close screen
             if event.type == pygame.QUIT:
                 running = False
@@ -124,7 +136,7 @@ def game(fps, WIDTH, HEIGHT, colors):
                 player.lives -= 1
                 player.shield = 100
         if player.lives == 0 and not death_explosion.alive():
-            running = False
+            game_over = True
 
 
         hits2 = pygame.sprite.groupcollide(mobs, bullets, True, True)
