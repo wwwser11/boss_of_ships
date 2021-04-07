@@ -9,6 +9,7 @@ from os import path
 from score_writer import *
 from Explosion_class import *
 from player_improve import *
+from mob_ships import *
 import time
 
 
@@ -33,6 +34,10 @@ def game(fps, WIDTH, HEIGHT, colors):
         m = Mob(meteor_img, WIDTH, HEIGHT, colors)
         all_sprites.add(m)
         mobs.add(m)
+    def new_enemy_ship():
+        s = Mob_ships(enemy_ship_img, WIDTH, HEIGHT, colors)
+        all_sprites.add(s)
+        enemy_ship.add(s)
     # turn on pygame
     pygame.init()
     # music
@@ -56,6 +61,8 @@ def game(fps, WIDTH, HEIGHT, colors):
     # take backpic
     background = pygame.image.load(path.join(img_dir, 'starfield.png')).convert()
     background_rect = background.get_rect()
+    enemy_ship_img_big = pygame.image.load(path.join(img_dir, 'ship.png')).convert()
+    enemy_ship_img = pygame.transform.scale(enemy_ship_img_big, (65, 39))
     player_img = pygame.image.load(path.join(img_dir, "Alien-Frigate.png")).convert()
     player_img_mini = pygame.transform.scale(player_img, (25, 19))
     player_img_mini.set_colorkey(colors['BLACK'])
@@ -68,6 +75,7 @@ def game(fps, WIDTH, HEIGHT, colors):
                    'meteorGrey_med1.png', 'meteorGrey_med2.png',
                    'meteorGrey_small1.png', 'meteorGrey_small2.png',
                    'meteorGrey_tiny1.png']
+
     for img in meteor_list:
         meteor_img.append(pygame.image.load(path.join(meteors_img, img)).convert())
     explosion_anim = {'large': [], 'small': [], 'player' : []}
@@ -86,17 +94,6 @@ def game(fps, WIDTH, HEIGHT, colors):
     powerup_images = {}
     powerup_images['shield'] = pygame.image.load(path.join(img_dir, 'shield_gold.png')).convert()
     powerup_images['gun'] = pygame.image.load(path.join(img_dir, 'bolt_gold.png'))
-    # all_sprites = pygame.sprite.Group()
-    # mobs = pygame.sprite.Group()
-    # bullets = pygame.sprite.Group()
-    # powerups = pygame.sprite.Group()
-    # player = Player(WIDTH, HEIGHT, player_img, all_sprites, bullets, bullet_img, colors, shoot_sound, POWER_UP_TIME)
-    # all_sprites.add(player)
-
-    # for i in range(8):
-    #     newmob()
-
-    score = 0
     pygame.mixer.music.play(loops=-1)
     running = True
     game_over = True
@@ -107,12 +104,17 @@ def game(fps, WIDTH, HEIGHT, colors):
             game_over = False
             all_sprites = pygame.sprite.Group()
             mobs = pygame.sprite.Group()
+            enemy_ship = pygame.sprite.Group()
             bullets = pygame.sprite.Group()
             powerups = pygame.sprite.Group()
             player = Player(WIDTH, HEIGHT, player_img, all_sprites, bullets, bullet_img, colors, shoot_sound, POWER_UP_TIME)
             all_sprites.add(player)
             for i in range(8):
                 newmob()
+            for i in range(random.randrange(1, 4)):
+                time.sleep(1)
+                new_enemy_ship()
+
             score = 0
         for event in pygame.event.get():  # now we can close screen
             if event.type == pygame.QUIT:
@@ -138,6 +140,22 @@ def game(fps, WIDTH, HEIGHT, colors):
         if player.lives == 0 and not death_explosion.alive():
             game_over = True
 
+        hits5 = pygame.sprite.spritecollide(player, enemy_ship, True, pygame.sprite.collide_circle)
+        for hit in hits5:
+            player.shield -= hit.radius * 2
+            random.choice(explosion_sound).play()
+            explosion = Explosion(hit.rect.center, 'small', explosion_anim)
+            all_sprites.add(explosion)
+            new_enemy_ship()
+            if player.shield <= 0:
+                death_explosion = Explosion(player.rect.center, 'player', explosion_anim)
+                all_sprites.add(death_explosion)
+                player.hide()
+                player.lives -= 1
+                player.shield = 100
+        if player.lives == 0 and not death_explosion.alive():
+            game_over = True
+
 
         hits2 = pygame.sprite.groupcollide(mobs, bullets, True, True)
         # hit to mob
@@ -152,6 +170,21 @@ def game(fps, WIDTH, HEIGHT, colors):
                 all_sprites.add(pow)
                 powerups.add(pow)
             newmob()
+
+        # hit enemy ship
+        hits4 = pygame.sprite.groupcollide(enemy_ship, bullets, True, True)
+        for hit in hits4:
+            score += 100
+            random.choice(explosion_sound).play()
+            explosion = Explosion(hit.rect.center, 'large', explosion_anim)
+            all_sprites.add(explosion)
+            # add chance to get power up(gun or more health)
+            if random.random() > 0.9:
+                pow = improve(hit.rect.center, HEIGHT, powerup_images,colors)
+                all_sprites.add(pow)
+                powerups.add(pow)
+            new_enemy_ship()
+
         # hit powerup icon
         hits3 = pygame.sprite.spritecollide(player, powerups, True)
         for hit in hits3:
