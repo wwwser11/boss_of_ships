@@ -1,16 +1,21 @@
 import pygame
 import random
 import time
-
+from enemy_laser import *
 
 # import os
 
 
 class Mob_ships(pygame.sprite.Sprite):
-    def __init__(self, ship_img, width, height, colors):
+    def __init__(self, ship_img, width, height, colors,  enemy_bullets, bullet_img, shoot_sound, all_sprites):
         self.w = width
         self.h = height
+        self.colors = colors
         pygame.sprite.Sprite.__init__(self)
+        self.all_sprites = all_sprites
+        self.shoot_sound = shoot_sound
+        self.enemy_bullets = enemy_bullets
+        self.bullet_img = bullet_img
         self.image_orig = ship_img
         self.image_orig.set_colorkey(colors['BLACK'])
         self.image = self.image_orig.copy()
@@ -27,6 +32,8 @@ class Mob_ships(pygame.sprite.Sprite):
         # set rotation speed
         self.rot_speed = random.randrange(-8, 8)
         self.last_update = pygame.time.get_ticks()
+        self.shoot_delay = random.randrange(300, 1500)
+        self.last_shot = pygame.time.get_ticks()
 
 
     def update(self):
@@ -39,3 +46,16 @@ class Mob_ships(pygame.sprite.Sprite):
             # self.rect.y = random.randrange(-100, -40)
             self.rect.y = -100
             self.speedy = random.randrange(1, 5)
+        for i in range(0,100):
+            if i > 50:
+                self.shoot()
+
+
+    def shoot(self):
+        now = pygame.time.get_ticks()
+        if now - self.last_shot > self.shoot_delay:
+            self.last_shot = now
+            laser_bullet = Enemy_laser(self.rect.centerx, self.rect.top, self.bullet_img, self.colors, 'enemy')
+            self.all_sprites.add(laser_bullet)
+            self.enemy_bullets.add(laser_bullet)
+            self.shoot_sound.play()

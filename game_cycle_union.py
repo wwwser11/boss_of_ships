@@ -10,6 +10,7 @@ from score_writer import *
 from Explosion_class import *
 from player_improve import *
 from mob_ships import *
+
 import time
 
 
@@ -35,7 +36,7 @@ def game(fps, WIDTH, HEIGHT, colors):
         all_sprites.add(m)
         mobs.add(m)
     def new_enemy_ship():
-        s = Mob_ships(enemy_ship_img, WIDTH, HEIGHT, colors)
+        s = Mob_ships(enemy_ship_img, WIDTH, HEIGHT, colors, enemy_bullets, enemy_bullet_img, shoot_sound, all_sprites)
         all_sprites.add(s)
         enemy_ship.add(s)
     # turn on pygame
@@ -67,6 +68,7 @@ def game(fps, WIDTH, HEIGHT, colors):
     player_img_mini = pygame.transform.scale(player_img, (25, 19))
     player_img_mini.set_colorkey(colors['BLACK'])
     bullet_img = pygame.image.load(path.join(img_dir, "laserGreen11.png")).convert()
+    enemy_bullet_img = pygame.image.load(path.join(img_dir,'laserRed14.png')).convert()
     meteor_img = []
     meteor_list = ['meteorBrown_big1.png', 'meteorBrown_med1.png',
                    'meteorBrown_med1.png', 'meteorBrown_med3.png',
@@ -106,13 +108,13 @@ def game(fps, WIDTH, HEIGHT, colors):
             mobs = pygame.sprite.Group()
             enemy_ship = pygame.sprite.Group()
             bullets = pygame.sprite.Group()
+            enemy_bullets = pygame.sprite.Group()
             powerups = pygame.sprite.Group()
             player = Player(WIDTH, HEIGHT, player_img, all_sprites, bullets, bullet_img, colors, shoot_sound, POWER_UP_TIME)
             all_sprites.add(player)
             for i in range(8):
                 newmob()
             for i in range(random.randrange(1, 4)):
-                time.sleep(1)
                 new_enemy_ship()
 
             score = 0
@@ -131,6 +133,25 @@ def game(fps, WIDTH, HEIGHT, colors):
             explosion = Explosion(hit.rect.center, 'small', explosion_anim)
             all_sprites.add(explosion)
             newmob()
+            if player.shield <= 0:
+                death_explosion = Explosion(player.rect.center, 'player', explosion_anim)
+                all_sprites.add(death_explosion)
+                player.hide()
+                player.lives -= 1
+                player.shield = 100
+        if player.lives == 0 and not death_explosion.alive():
+            game_over = True
+
+            # hit enemy_laset to player
+        hits6 = pygame.sprite.spritecollide(player, enemy_bullets, True, pygame.sprite.collide_circle)
+        for hit in hits6:
+            score -= 50
+            if score < 0:
+                score = 0
+            player.shield -= hit.radius * 10
+            random.choice(explosion_sound).play()
+            explosion = Explosion(hit.rect.center, 'large', explosion_anim)
+            all_sprites.add(explosion)
             if player.shield <= 0:
                 death_explosion = Explosion(player.rect.center, 'player', explosion_anim)
                 all_sprites.add(death_explosion)
