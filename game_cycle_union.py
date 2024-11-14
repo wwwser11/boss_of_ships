@@ -81,7 +81,7 @@ def game(fps, WIDTH, HEIGHT, colors):
     for img in meteor_list:
         meteor_img.append(pygame.image.load(path.join(meteors_img, img)).convert())
     explosion_anim = {'large': [], 'small': [], 'player' : []}
-    for i in range(9):
+    for i in range(4):
         filename = 'regularExplosion0{}.png'.format(i)
         img = pygame.image.load(path.join(explosion_img, filename)).convert()
         img.set_colorkey(colors['BLACK'])
@@ -94,8 +94,11 @@ def game(fps, WIDTH, HEIGHT, colors):
         img.set_colorkey(colors['BLACK'])
         explosion_anim['player'].append(img2)
     powerup_images = {}
-    powerup_images['shield'] = pygame.image.load(path.join(img_dir, 'shield_gold.png')).convert()
-    powerup_images['gun'] = pygame.image.load(path.join(img_dir, 'bolt_gold.png'))
+    """powerup_images['shield'] = pygame.image.load(path.join(img_dir, 'shield_gold.png')).convert() """
+    powerup_images['shield'] = pygame.image.load(path.join(img_dir, 'laserRed14.png')).convert()
+    
+    """ powerup_images['shield'] = pygame.image.load(path.join(img_dir, 'shield_gold.png')).convert() """
+    powerup_images['shield'] = pygame.image.load(path.join(img_dir, 'laserRed14.png')).convert()
     pygame.mixer.music.play(loops=-1)
     running = True
     game_over = True
