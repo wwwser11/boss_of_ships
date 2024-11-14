@@ -15,11 +15,10 @@ In this game, your ship travels through space, encountering asteroids and enemy 
 
 ## Screenshots
 
-### Start Screen
-![Start Screen](screenshots/start_screen.png)
-
-### Gameplay
-![Gameplay](screenshots/gameplay.png)
+<div style="display: flex; justify-content: center;">
+  <img src="screenshots/scr_1.png" alt="Start Screen" width="300" style="margin-right: 10px;"/>
+  <img src="screenshots/scr_2.png" alt="Gameplay" width="300" style="margin-left: 10px;"/>
+</div>
 
 ## Requirements
 
@@ -65,3 +64,5 @@ This game was created as a project to practice Python programming and working wi
 
 Pygame community for their support and resources.
 All image and sound assets were sourced from open resources for educational use in this project.
+
+
